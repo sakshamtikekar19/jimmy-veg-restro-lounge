@@ -2,34 +2,6 @@
 
 import { useState } from "react";
 
-declare global {
-  interface Window {
-    Razorpay?: new (options: RazorpayOptions) => RazorpayInstance;
-  }
-}
-
-interface RazorpayOptions {
-  key: string;
-  amount: number;
-  currency: string;
-  name: string;
-  description: string;
-  order_id?: string;
-  handler: (response: RazorpayResponse) => void;
-  prefill?: { name?: string; email?: string; contact?: string };
-}
-
-interface RazorpayInstance {
-  open: () => void;
-  on: (event: string, handler: (response: unknown) => void) => void;
-}
-
-interface RazorpayResponse {
-  razorpay_payment_id: string;
-  razorpay_order_id: string;
-  razorpay_signature: string;
-}
-
 export default function Reservation() {
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
@@ -39,100 +11,21 @@ export default function Reservation() {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
-  const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
-  const razorpayKeyId = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
-
-  const handlePayAdvance = async () => {
+  const handleSubmit = () => {
     if (!date || !time || !name || !phone) {
       setMessage({ type: "error", text: "Please fill in all required fields." });
       return;
     }
 
-    setLoading(true);
     setMessage(null);
-
-    try {
-      if (razorpayKeyId) {
-        const res = await fetch("/api/create-order", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            amount: 50000, // ₹500 in paise
-            currency: "INR",
-            receipt: `jimmys-${Date.now()}`,
-          }),
-        });
-        const data = await res.json();
-        if (!data.orderId) throw new Error(data.error || "Failed to create order");
-
-        const options: RazorpayOptions = {
-          key: razorpayKeyId,
-          amount: 50000,
-          currency: "INR",
-          name: "Jimmy Veg Restro Lounge",
-          description: "Table reservation deposit",
-          order_id: data.orderId,
-          handler: async (response: RazorpayResponse) => {
-            const verifyRes = await fetch("/api/verify-payment", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_signature: response.razorpay_signature,
-                booking: { date, time, guests, preference, celebrationCake, name, phone, email },
-              }),
-            });
-            const verifyData = await verifyRes.json();
-            if (verifyData.success) {
-              setMessage({ type: "success", text: "Booking confirmed! We'll contact you shortly." });
-              setDate("");
-              setTime("");
-              setName("");
-              setPhone("");
-              setEmail("");
-            } else {
-              setMessage({ type: "error", text: verifyData.error || "Payment verification failed." });
-            }
-          },
-          prefill: { name, email, contact: phone },
-        };
-
-        const Razorpay = window.Razorpay;
-        if (!Razorpay) {
-          const script = document.createElement("script");
-          script.src = "https://checkout.razorpay.com/v1/checkout.js";
-          script.async = true;
-          document.body.appendChild(script);
-          script.onload = () => {
-            const rzp = new window.Razorpay!(options);
-            rzp.open();
-          };
-        } else {
-          const rzp = new Razorpay(options);
-          rzp.open();
-        }
-      } else {
-        const whatsappMsg = `Hi, I'd like to book a table at Jimmy's.%0A%0ADate: ${date}%0ATime: ${time}%0AGuests: ${guests}%0APreference: ${preference === "rooftop" ? "Rooftop Lounge" : "Fine Dine Indoors"}%0ACelebration Cake: ${celebrationCake ? "Yes" : "No"}%0AName: ${name}%0APhone: ${phone}%0AEmail: ${email}`;
-        window.open(
-          `https://wa.me/919876543210?text=${whatsappMsg}`,
-          "_blank"
-        );
-        setMessage({
-          type: "success",
-          text: "Redirecting to WhatsApp. Please send the message to confirm your booking.",
-        });
-      }
-    } catch (err) {
-      setMessage({
-        type: "error",
-        text: err instanceof Error ? err.message : "Something went wrong.",
-      });
-    } finally {
-      setLoading(false);
-    }
+    const whatsappMsg = `Hi, I'd like to book a table at Jimmy's.%0A%0ADate: ${date}%0ATime: ${time}%0AGuests: ${guests}%0APreference: ${preference === "rooftop" ? "Rooftop Lounge" : "Fine Dine Indoors"}%0ACelebration Cake: ${celebrationCake ? "Yes" : "No"}%0AName: ${name}%0APhone: ${phone}%0AEmail: ${email}`;
+    window.open(`https://wa.me/919876543210?text=${whatsappMsg}`, "_blank");
+    setMessage({
+      type: "success",
+      text: "Opening WhatsApp. Please send the message to confirm your booking.",
+    });
   };
 
   return (
@@ -146,12 +39,12 @@ export default function Reservation() {
             Reserve Your <span className="gold-gradient">Table</span>
           </h2>
           <p className="text-amber-100/60 font-light">
-            Pay ₹500 advance to confirm your booking. Refundable on cancellation 24h prior.
+            Fill in your details and we&apos;ll confirm via WhatsApp.
           </p>
         </div>
 
         <div className="bg-[#141414] rounded-sm border border-[#2d2d2d] p-8 md:p-10 shadow-[0_25px_80px_rgba(0,0,0,0.4)]">
-          <form className="space-y-5">
+          <form className="space-y-5" onSubmit={(e) => e.preventDefault()}>
             <div className="grid sm:grid-cols-2 gap-5">
               <div>
                 <label className="block text-sm font-medium text-gray-400 mb-2">Date *</label>
@@ -270,11 +163,10 @@ export default function Reservation() {
 
             <button
               type="button"
-              onClick={handlePayAdvance}
-              disabled={loading}
-              className="w-full py-4 rounded-sm bg-gradient-to-r from-[#c9a227] to-[#d4af37] hover:from-[#d4af37] hover:to-[#e8d48b] text-[#0d0d0d] font-display tracking-widest text-sm font-semibold transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed shadow-[0_0_30px_rgba(201,162,39,0.2)]"
+              onClick={handleSubmit}
+              className="w-full py-4 rounded-sm bg-gradient-to-r from-[#c9a227] to-[#d4af37] hover:from-[#d4af37] hover:to-[#e8d48b] text-[#0d0d0d] font-display tracking-widest text-sm font-semibold transition-all duration-300 shadow-[0_0_30px_rgba(201,162,39,0.2)]"
             >
-              {loading ? "Processing..." : razorpayKeyId ? "Pay Advance (₹500)" : "Confirm via WhatsApp"}
+              Confirm via WhatsApp
             </button>
           </form>
         </div>
