@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Jimmy Veg Restro Lounge
 
-## Getting Started
+A premium, dark-themed Next.js website for **Jimmy Veg Restro Lounge** — Pure Veg Fine Dine & Rooftop Experience in Dombivli.
 
-First, run the development server:
+## Features
+
+- **Hero Section** – Full-screen hero with "Dine Above the Lights of Dombivli"
+- **Quick Stats** – Pure Veg, Rooftop Lounge, Fine Dining
+- **Interactive Menu** – Starters, Main Course, Mocktails (mobile-friendly)
+- **Rooftop Showcase** – Lounge vs Fine Dine areas
+- **Reservation System** – Date, time, guests, preference, Razorpay ₹500 deposit
+- **Floating CTAs** – Book a Table & View Menu that follow on scroll
+- **Instagram Feed** – Placeholder for 16-posts grid (connect API for live feed)
+- **Google Maps** – Dark-mode map for Golden Plaza, Dombivli
+
+## Tech Stack
+
+- **Next.js 16** – Fast page loads, optimized for slow mobile data
+- **TypeScript** – Type safety
+- **Tailwind CSS** – Responsive, mobile-first styling
+- **Razorpay** – Payment integration for table deposits
+
+## Setup
 
 ```bash
+npm install
+cp .env.example .env.local
+# Add your Razorpay keys to .env.local
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Razorpay Setup
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Create a [Razorpay](https://razorpay.com) account
+2. Get API keys from Dashboard → Settings → API Keys
+3. Add to `.env.local`:
 
-## Learn More
+```
+NEXT_PUBLIC_RAZORPAY_KEY_ID=rzp_test_xxxx
+RAZORPAY_KEY_ID=rzp_test_xxxx
+RAZORPAY_KEY_SECRET=xxxx
+```
 
-To learn more about Next.js, take a look at the following resources:
+Without Razorpay keys, the reservation form falls back to opening WhatsApp with pre-filled booking details.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Customization
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **Instagram handle**: Update `instagramHandle` in `Footer.tsx` and `InstagramFeed.tsx`
+- **Phone number**: Update the WhatsApp/phone link in `Footer.tsx` and `Reservation.tsx`
+- **Google Maps**: Replace the iframe `src` in `Footer.tsx` with your venue’s embed URL
 
-## Deploy on Vercel
+## Why This Build?
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Speed** – Next.js ensures the menu and pages load quickly on slow mobile connections
+- **SEO** – Tuned for “Best Rooftop Restaurant in Dombivli”
+- **Mobile-first** – Layout works well on phones and tablets for booking via Instagram/phone

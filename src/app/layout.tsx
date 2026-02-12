@@ -1,22 +1,24 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Cormorant_Garamond, Cinzel } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import FloatingCTAs from "@/components/FloatingCTAs";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const cormorant = Cormorant_Garamond({
+  variable: "--font-cormorant",
   subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const cinzel = Cinzel({
+  variable: "--font-cinzel",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
   title: "Jimmy Veg Restro Lounge | Best Rooftop Restaurant in Dombivli",
-  description: "Pure Veg Fine Dine & Rooftop Experience. Dine above the lights of Dombivli at 7th & 8th Floor, Golden Plaza, Ramnagar, Dombivli East.",
+  description: "Pure Veg Fine Dine & Rooftop Experience. Dine above the lights of Dombivli at Phadke Road, Ram Nagar, Dombivli East.",
   keywords: ["rooftop restaurant Dombivli", "pure veg Dombivli", "fine dining Dombivli", "Jimmy Veg Restro Lounge"],
   openGraph: {
     title: "Jimmy Veg Restro Lounge | Best Rooftop Restaurant in Dombivli",
@@ -31,7 +33,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#1a1a1a] text-gray-100`}>
+      <body className={`${cormorant.variable} ${cinzel.variable} font-sans antialiased bg-[#0d0d0d] text-gray-100`}>
         <Navbar />
         {children}
         <FloatingCTAs />
