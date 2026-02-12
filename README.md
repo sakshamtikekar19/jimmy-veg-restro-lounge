@@ -51,6 +51,15 @@ Without Razorpay keys, the reservation form falls back to opening WhatsApp with 
 - **Phone number**: Update the WhatsApp/phone link in `Footer.tsx` and `Reservation.tsx`
 - **Google Maps**: Replace the iframe `src` in `Footer.tsx` with your venue’s embed URL
 
+## GitHub Pages Deployment
+
+The site is configured for [GitHub Pages](https://sakshamtikekar19.github.io/jimmy-veg-restro-lounge/):
+
+1. **Enable GitHub Pages** in repo Settings → Pages → Source: **GitHub Actions**
+2. Push to `main` or `master` – the workflow builds and deploys automatically.
+
+**Note:** Razorpay payments don’t work on GitHub Pages (no server). The reservation form uses WhatsApp instead. For Razorpay, deploy to [Vercel](https://vercel.com) and restore the `src/app/api` routes.
+
 ## Why This Build?
 
 - **Speed** – Next.js ensures the menu and pages load quickly on slow mobile connections
